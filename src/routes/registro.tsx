@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 import type { Role } from "@/lib/types";
 
 export const Route = createFileRoute("/registro")({
+  ssr: false,
   component: RegisterPage,
 });
 

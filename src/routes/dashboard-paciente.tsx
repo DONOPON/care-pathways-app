@@ -19,6 +19,7 @@ import { storage } from "@/lib/storage";
 import type { Cita, Receta, User } from "@/lib/types";
 
 export const Route = createFileRoute("/dashboard-paciente")({
+  ssr: false,
   component: () => (
     <RequireAuth role="paciente">
       <PacienteDashboard />

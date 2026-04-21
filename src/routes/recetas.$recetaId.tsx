@@ -9,6 +9,7 @@ import { storage } from "@/lib/storage";
 import type { Receta, User } from "@/lib/types";
 
 export const Route = createFileRoute("/recetas/$recetaId")({
+  ssr: false,
   component: () => (
     <RequireAuth>
       <RecetaPage />

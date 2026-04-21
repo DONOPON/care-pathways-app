@@ -31,6 +31,7 @@ const HORARIOS = [
 ];
 
 export const Route = createFileRoute("/agendar-cita")({
+  ssr: false,
   validateSearch: (search: Record<string, unknown>) => ({
     doctorId: typeof search.doctorId === "string" ? search.doctorId : undefined,
   }),
