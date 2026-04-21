@@ -25,12 +25,13 @@ jobs:
       - name: Install dependencies
         run: npm ci || npm install
       - name: Build
-        env:
-          # Ajusta si renombras el repo. Debe terminar con "/".
-          VITE_BASE: /care-pathways-app/
+        # vite.config.ts deduce el base a partir de GITHUB_REPOSITORY
+        # automáticamente. No hace falta pasar VITE_BASE manualmente.
         run: npm run build
       - name: Add SPA 404 fallback
         run: cp dist/index.html dist/404.html
+      - name: Disable Jekyll processing
+        run: touch dist/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
