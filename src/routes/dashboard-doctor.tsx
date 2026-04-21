@@ -86,12 +86,12 @@ function DoctorDashboard() {
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                        className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${
                           {
-                            pendiente: "bg-amber-100 text-amber-700",
-                            confirmada: "bg-blue-100 text-blue-700",
-                            completada: "bg-emerald-100 text-emerald-700",
-                            cancelada: "bg-red-100 text-red-700",
+                            pendiente: "bg-accent-soft text-accent",
+                            confirmada: "bg-primary-soft text-primary-glow",
+                            completada: "bg-success-soft text-success",
+                            cancelada: "bg-destructive/10 text-destructive",
                           }[c.estado]
                         }`}
                       >
@@ -100,7 +100,7 @@ function DoctorDashboard() {
                       {c.estado === "pendiente" && (
                         <button
                           onClick={() => updateEstado(c, "confirmada")}
-                          className="rounded-md bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700"
+                          className="rounded-md bg-primary-glow px-3 py-1 text-xs font-medium text-primary-foreground hover:bg-primary-glow/90"
                         >
                           Confirmar
                         </button>
