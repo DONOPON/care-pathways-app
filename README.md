@@ -1,67 +1,45 @@
 # SaludDigital
 
-Portal de salud digital construido con **React + Vite + TanStack Router** (SPA pura).
-Persistencia simulada con `localStorage` — sin backend.
+Portal de salud digital construido sobre **TanStack Start** (React 19 + Vite + SSR),
+con persistencia simulada en `localStorage` (sin backend).
 
 ## Scripts
 
 ```bash
 npm install
 npm run dev        # http://localhost:8080
-npm run build      # genera ./dist
+npm run build      # build SSR (Cloudflare Worker compatible)
 npm run preview
 ```
 
-## Cuentas demo (precargadas)
+## Cuentas demo
 
 - **Paciente:** `paciente@demo.com` / `demo1234`
 - **Doctor:** `doctor@demo.com` / `demo1234`
 
-## Despliegue en GitHub Pages
+## Despliegue
 
-El proyecto está preparado para GitHub Pages **sin configuración adicional**.
+### Lovable
+Funciona out-of-the-box. Pulsa **Publish**.
 
-1. Sube el repo a GitHub (cualquier nombre, ej. `portal-salud`).
-2. En *Settings → Pages*, elige **GitHub Actions** como Source.
-3. Haz push a `main`. El workflow `.github/workflows/deploy.yml` se encarga del resto.
+### GitHub Pages / hosting estático
+TanStack Start es SSR. Para GitHub Pages hay dos opciones:
 
-La app quedará disponible en:
-```
-https://<usuario>.github.io/<nombre-del-repo>/
-```
+1. **Recomendado**: usa Cloudflare Pages, Vercel o Netlify (soportan el bundle generado por `npm run build`).
+2. **GitHub Pages estricto**: el build incluye `dist/client/` con HTML estático. Sirve esa carpeta.
+   Si renombras el repo, define la base con `VITE_BASE="/<repo>/"` antes del build.
 
-### ¿Qué cambiar si renombras el repo?
-
-**Nada en el código.** El workflow detecta automáticamente el nombre del repo
-y construye con `VITE_BASE="/<nombre-del-repo>/"`.
-
-Si compilas localmente para servir bajo un subpath, usa:
-
-```bash
-VITE_BASE="/portal-salud/" npm run build
-```
-
-### ¿Por qué hash routing?
-
-Usamos `createHashHistory` de TanStack Router. Las URLs se ven así:
-
-```
-https://usuario.github.io/portal-salud/#/login
-https://usuario.github.io/portal-salud/#/dashboard-paciente
-```
-
-Esto garantiza:
-- ✅ Recargar cualquier ruta funciona sin trucos de `404.html`.
-- ✅ Funciona en cualquier hosting estático (GitHub Pages, Netlify, S3...).
-- ✅ Compatible 100% con Lovable.
+> Nota: hash routing puro requiere reconvertir el proyecto a SPA Vite plano,
+> lo cual rompe la compatibilidad con el runtime de Lovable. Manténte con el SSR
+> para Lovable y usa un host compatible si necesitas algo distinto a GitHub Pages.
 
 ## Estructura
 
 ```
 src/
-├── components/       # Header, RequireAuth
-├── lib/              # auth, storage, types
-├── routes/           # rutas (file-based, TanStack Router)
+├── components/       Header, RequireAuth
+├── lib/              auth, storage, types
+├── routes/           rutas (file-based)
 │   ├── __root.tsx
 │   ├── index.tsx                  → /
 │   ├── login.tsx                  → /login
@@ -70,14 +48,12 @@ src/
 │   ├── dashboard-doctor.tsx       → /dashboard-doctor
 │   ├── agendar-cita.tsx           → /agendar-cita
 │   └── recetas.$recetaId.tsx      → /recetas/:recetaId
-├── router.tsx        # router con hash history
-├── main.tsx          # entry
-└── styles.css        # design system (Tailwind v4)
+├── router.tsx
+└── styles.css
 ```
 
 ## Notas técnicas
 
-- **Sin navegación en render**: redirecciones por sesión hechas dentro de `useEffect`.
-- **Sin loops de render**: dependencias de `useEffect` revisadas.
-- **`localStorage`**: ver `src/lib/storage.ts` (claves prefijadas `sd_`).
-- **PDF de recetas**: `jsPDF` (cliente).
+- Todas las redirecciones por sesión están en `useEffect` (sin nav en render).
+- `localStorage` está protegido con guard `typeof window` en `src/lib/storage.ts`.
+- Recetas → PDF con `jsPDF`.
