@@ -6,7 +6,7 @@ const KEYS = {
   citas: "sd_citas",
   recetas: "sd_recetas",
   favoritos: "sd_favoritos",
-  seeded: "sd_seeded_v1",
+  seeded: "sd_seeded_v2",
 } as const;
 
 function read<T>(key: string, fallback: T): T {
@@ -25,19 +25,14 @@ function write<T>(key: string, value: T): void {
 }
 
 export const storage = {
-  // users
   getUsers: () => read<User[]>(KEYS.users, []),
   setUsers: (u: User[]) => write(KEYS.users, u),
-  // session
   getSession: () => read<string | null>(KEYS.session, null),
   setSession: (id: string | null) => write(KEYS.session, id),
-  // citas
   getCitas: () => read<Cita[]>(KEYS.citas, []),
   setCitas: (c: Cita[]) => write(KEYS.citas, c),
-  // recetas
   getRecetas: () => read<Receta[]>(KEYS.recetas, []),
   setRecetas: (r: Receta[]) => write(KEYS.recetas, r),
-  // favoritos: { [pacienteId]: doctorId[] }
   getFavoritos: () => read<Record<string, string[]>>(KEYS.favoritos, {}),
   setFavoritos: (f: Record<string, string[]>) => write(KEYS.favoritos, f),
   isSeeded: () => read<boolean>(KEYS.seeded, false),
@@ -50,70 +45,108 @@ export function seedIfEmpty(): void {
   const users: User[] = [
     {
       id: "u-paciente-demo",
-      nombre: "María García",
+      nombre: "Pedro Ramírez",
       email: "paciente@demo.com",
       password: "demo1234",
       role: "paciente",
     },
     {
-      id: "u-doctor-demo",
-      nombre: "Dr. Carlos Ramírez",
+      id: "u-doc-maria",
+      nombre: "Dra. María García",
       email: "doctor@demo.com",
       password: "demo1234",
       role: "doctor",
       especialidad: "Cardiología",
     },
     {
-      id: "u-doctor-2",
-      nombre: "Dra. Ana López",
-      email: "ana@demo.com",
+      id: "u-doc-juan",
+      nombre: "Dr. Juan Pérez",
+      email: "juan@demo.com",
       password: "demo1234",
       role: "doctor",
-      especialidad: "Pediatría",
+      especialidad: "Medicina General",
     },
     {
-      id: "u-doctor-3",
-      nombre: "Dr. Luis Mendoza",
-      email: "luis@demo.com",
+      id: "u-doc-ana",
+      nombre: "Dra. Ana López",
+      email: "ana@demo.com",
       password: "demo1234",
       role: "doctor",
       especialidad: "Dermatología",
     },
     {
-      id: "u-doctor-4",
-      nombre: "Dra. Sofía Torres",
-      email: "sofia@demo.com",
+      id: "u-doc-carlos",
+      nombre: "Dr. Carlos Ruiz",
+      email: "carlos@demo.com",
       password: "demo1234",
       role: "doctor",
-      especialidad: "Medicina General",
+      especialidad: "Pediatría",
+    },
+    {
+      id: "u-doc-laura",
+      nombre: "Dra. Laura Martínez",
+      email: "laura@demo.com",
+      password: "demo1234",
+      role: "doctor",
+      especialidad: "Neurología",
+    },
+    {
+      id: "u-doc-roberto",
+      nombre: "Dr. Roberto Sánchez",
+      email: "roberto@demo.com",
+      password: "demo1234",
+      role: "doctor",
+      especialidad: "Traumatología",
     },
   ];
-
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
-  const fmt = (d: Date) => d.toISOString().slice(0, 10);
 
   const citas: Cita[] = [
     {
       id: "c-1",
       pacienteId: "u-paciente-demo",
-      doctorId: "u-doctor-demo",
-      fecha: fmt(tomorrow),
-      hora: "10:00",
-      motivo: "Chequeo cardiológico de rutina",
+      doctorId: "u-doc-juan",
+      fecha: "2026-04-15",
+      hora: "10:30",
+      motivo: "Chequeo general",
       estado: "pendiente",
     },
     {
       id: "c-2",
       pacienteId: "u-paciente-demo",
-      doctorId: "u-doctor-2",
-      fecha: fmt(today),
-      hora: "16:00",
-      motivo: "Consulta general",
+      doctorId: "u-doc-ana",
+      fecha: "2026-04-20",
+      hora: "14:00",
+      motivo: "Revisión dermatológica",
+      estado: "pendiente",
+    },
+    {
+      id: "c-3",
+      pacienteId: "u-paciente-demo",
+      doctorId: "u-doc-ana",
+      fecha: "2026-04-30",
+      hora: "15:00",
+      motivo: "me duele el pie",
+      estado: "pendiente",
+    },
+    {
+      id: "c-4",
+      pacienteId: "u-paciente-demo",
+      doctorId: "u-doc-maria",
+      fecha: "2026-05-05",
+      hora: "09:00",
+      motivo: "Seguimiento cardiológico",
+      estado: "confirmada",
+    },
+    {
+      id: "c-5",
+      pacienteId: "u-paciente-demo",
+      doctorId: "u-doc-maria",
+      fecha: "2026-04-10",
+      hora: "09:00",
+      motivo: "Control cardíaco",
       estado: "completada",
-      diagnostico: "Cuadro gripal leve",
-      observaciones: "Reposo y abundante hidratación",
+      diagnostico: "Hipertensión leve controlada",
+      observaciones: "Mantener dieta hiposódica",
       recetaId: "r-1",
     },
   ];
@@ -121,21 +154,21 @@ export function seedIfEmpty(): void {
   const recetas: Receta[] = [
     {
       id: "r-1",
-      citaId: "c-2",
+      citaId: "c-5",
       pacienteId: "u-paciente-demo",
-      doctorId: "u-doctor-2",
-      fecha: fmt(today),
+      doctorId: "u-doc-maria",
+      fecha: "2026-04-10",
       medicamentos: [
-        { nombre: "Paracetamol 500mg", dosis: "1 tableta", frecuencia: "Cada 8 horas por 3 días" },
-        { nombre: "Vitamina C", dosis: "1 tableta", frecuencia: "Una vez al día por 7 días" },
+        { nombre: "Losartán 50mg", dosis: "1 comprimido", frecuencia: "cada 24h por 30 días" },
+        { nombre: "Acido acetilsalicílico 100mg", dosis: "1 comprimido", frecuencia: "al día tras el almuerzo" },
       ],
-      indicaciones: "Tomar con abundante agua. Evitar exposición al frío.",
+      indicaciones: "Dieta hiposódica y caminar 30 min diarios.",
     },
   ];
 
   storage.setUsers(users);
   storage.setCitas(citas);
   storage.setRecetas(recetas);
-  storage.setFavoritos({ "u-paciente-demo": ["u-doctor-demo"] });
+  storage.setFavoritos({ "u-paciente-demo": ["u-doc-maria"] });
   storage.markSeeded();
 }

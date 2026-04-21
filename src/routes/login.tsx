@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { Heart, Mail, Lock } from "lucide-react";
+import { Heart, LogIn } from "lucide-react";
+import { Header } from "@/components/Header";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
@@ -31,98 +32,76 @@ function LoginPage() {
     navigate({ to: u.role === "doctor" ? "/dashboard-doctor" : "/dashboard-paciente" });
   };
 
-  const fillDemo = (kind: "paciente" | "doctor") => {
-    setEmail(kind === "paciente" ? "paciente@demo.com" : "doctor@demo.com");
-    setPassword("demo1234");
-  };
-
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary-soft to-background p-4">
-      <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-xl">
-        <Link to="/" className="mb-6 flex items-center justify-center gap-2 text-primary">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Heart className="h-5 w-5 fill-current" />
-          </div>
-          <span className="text-xl font-bold">SaludDigital</span>
-        </Link>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main className="flex flex-col items-center px-4 py-10">
+        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-accent-foreground shadow-sm">
+          <Heart className="h-6 w-6 fill-current" />
+        </div>
+        <h1 className="text-3xl font-bold">Iniciar Sesión</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Accede a tu portal de salud</p>
 
-        <h1 className="text-center text-2xl font-bold">Iniciar Sesión</h1>
-        <p className="mt-1 text-center text-sm text-muted-foreground">
-          Bienvenido de vuelta a tu portal de salud
-        </p>
-
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <div>
-            <label className="mb-1.5 block text-sm font-medium">Correo electrónico</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <div className="mt-6 w-full max-w-md rounded-2xl border bg-card p-6 shadow-sm">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">Correo electrónico</label>
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-lg border bg-background py-2.5 pl-10 pr-3 text-sm outline-none ring-primary/30 focus:ring-2"
-                placeholder="tu@correo.com"
+                className="w-full rounded-lg border bg-background px-3 py-2.5 text-sm outline-none ring-primary-glow/30 focus:ring-2"
+                placeholder="tu@email.com"
               />
             </div>
-          </div>
 
-          <div>
-            <label className="mb-1.5 block text-sm font-medium">Contraseña</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <div>
+              <label className="mb-1.5 block text-sm font-medium">Contraseña</label>
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border bg-background py-2.5 pl-10 pr-3 text-sm outline-none ring-primary/30 focus:ring-2"
+                className="w-full rounded-lg border bg-background px-3 py-2.5 text-sm outline-none ring-primary-glow/30 focus:ring-2"
                 placeholder="••••••••"
               />
             </div>
-          </div>
 
-          {error && (
-            <p className="rounded-md bg-destructive/10 p-2 text-center text-sm text-destructive">
-              {error}
-            </p>
-          )}
+            {error && (
+              <p className="rounded-md bg-destructive/10 p-2 text-center text-sm text-destructive">
+                {error}
+              </p>
+            )}
 
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-primary py-2.5 font-semibold text-primary-foreground transition hover:bg-primary/90"
-          >
-            Entrar
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 font-semibold text-primary-foreground transition hover:bg-primary/90"
+            >
+              <LogIn className="h-4 w-4" /> Entrar
+            </button>
+          </form>
+        </div>
 
         <p className="mt-5 text-center text-sm text-muted-foreground">
           ¿No tienes cuenta?{" "}
-          <Link to="/registro" className="font-medium text-primary hover:underline">
+          <Link to="/registro" className="font-semibold text-primary hover:underline">
             Regístrate
           </Link>
         </p>
 
-        <div className="mt-6 rounded-lg border border-dashed bg-muted/40 p-4">
-          <p className="mb-2 text-xs font-semibold text-muted-foreground">Cuentas demo</p>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => fillDemo("paciente")}
-              className="flex-1 rounded-md bg-background px-3 py-2 text-xs font-medium hover:bg-accent"
-            >
-              Paciente
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemo("doctor")}
-              className="flex-1 rounded-md bg-background px-3 py-2 text-xs font-medium hover:bg-accent"
-            >
-              Doctor
-            </button>
-          </div>
+        <div className="mt-6 w-full max-w-md rounded-xl border bg-muted/40 p-4 text-sm">
+          <p className="mb-2 font-semibold">Cuentas demo:</p>
+          <p>
+            <span className="text-muted-foreground">Paciente:</span>{" "}
+            <span className="text-primary">paciente@demo.com / demo1234</span>
+          </p>
+          <p>
+            <span className="text-muted-foreground">Doctor:</span>{" "}
+            <span className="text-primary">doctor@demo.com / demo1234</span>
+          </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { Calendar, Clock, Stethoscope } from "lucide-react";
+import { Calendar, Clock, Stethoscope, Search, CheckCircle2 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { RequireAuth } from "@/components/RequireAuth";
 import { useAuth } from "@/lib/auth";
@@ -9,15 +9,25 @@ import type { Cita, User } from "@/lib/types";
 
 const HORARIOS = [
   "08:00",
+  "08:30",
   "09:00",
+  "09:30",
   "10:00",
+  "10:30",
   "11:00",
+  "11:30",
   "12:00",
+  "12:30",
+  "13:00",
+  "13:30",
   "14:00",
+  "14:30",
   "15:00",
+  "15:30",
   "16:00",
+  "16:30",
   "17:00",
-  "18:00",
+  "17:30",
 ];
 
 export const Route = createFileRoute("/agendar-cita")({
@@ -44,6 +54,7 @@ function Agendar() {
   const [motivo, setMotivo] = useState("");
   const [error, setError] = useState("");
   const [busyHours, setBusyHours] = useState<string[]>([]);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     setDoctors(storage.getUsers().filter((u) => u.role === "doctor"));
@@ -105,44 +116,63 @@ function Agendar() {
     const all = storage.getCitas();
     all.push(nueva);
     storage.setCitas(all);
-    navigate({ to: "/dashboard-paciente" });
+    setSuccess(true);
+    setTimeout(() => navigate({ to: "/dashboard-paciente" }), 1400);
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header variant="app" />
+        <main className="flex flex-col items-center justify-center px-4 py-24 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-success">
+            <CheckCircle2 className="h-8 w-8 text-success" />
+          </div>
+          <h1 className="mt-5 text-2xl font-bold">¡Cita agendada!</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Redirigiendo a tu dashboard...</p>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <Header variant="app" />
       <main className="container mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-3xl font-bold">Agendar nueva cita</h1>
-        <p className="mt-1 text-muted-foreground">Encuentra el horario perfecto para ti.</p>
+        <h1 className="text-3xl font-bold">Agendar Cita</h1>
+        <p className="mt-1 text-muted-foreground">Selecciona especialidad, médico, fecha y hora</p>
 
         <form
           onSubmit={handleSubmit}
           className="mt-6 space-y-5 rounded-2xl border bg-card p-6 shadow-sm"
         >
-          <Field label="Especialidad" icon={Stethoscope}>
-            <select
-              value={especialidad}
-              onChange={(e) => {
-                setEspecialidad(e.target.value);
-                setDoctorId("");
-              }}
-              className="w-full rounded-lg border bg-background px-3 py-2.5 text-sm"
-            >
-              <option value="">Todas las especialidades</option>
-              {especialidades.map((s) => (
-                <option key={s}>{s}</option>
-              ))}
-            </select>
+          <Field label="Especialidad">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <select
+                value={especialidad}
+                onChange={(e) => {
+                  setEspecialidad(e.target.value);
+                  setDoctorId("");
+                }}
+                className="w-full appearance-none rounded-lg border bg-background py-2.5 pl-9 pr-3 text-sm"
+              >
+                <option value="">Todas las especialidades</option>
+                {especialidades.map((s) => (
+                  <option key={s}>{s}</option>
+                ))}
+              </select>
+            </div>
           </Field>
 
-          <Field label="Médico">
+          <Field label="Médico" required>
             <select
               value={doctorId}
               onChange={(e) => setDoctorId(e.target.value)}
               required
-              className="w-full rounded-lg border bg-background px-3 py-2.5 text-sm"
+              className="w-full appearance-none rounded-lg border bg-background px-3 py-2.5 text-sm"
             >
-              <option value="">Selecciona un médico</option>
+              <option value="">Seleccionar médico</option>
               {filteredDoctors.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.nombre} — {d.especialidad}
@@ -151,7 +181,7 @@ function Agendar() {
             </select>
           </Field>
 
-          <Field label="Fecha" icon={Calendar}>
+          <Field label="Fecha" required>
             <input
               type="date"
               required
@@ -162,13 +192,34 @@ function Agendar() {
             />
           </Field>
 
-          {fecha && doctorId && (
-            <Field label="Horarios disponibles" icon={Clock}>
+          <div>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label className="text-sm font-medium">
+                Hora <span className="text-destructive">*</span>
+              </label>
+              {fecha && doctorId && (
+                <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <span className="h-2 w-2 rounded-full bg-success" /> Disponible
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <span className="h-2 w-2 rounded-full bg-muted-foreground/50" /> Ocupado
+                  </span>
+                </div>
+              )}
+            </div>
+            {!fecha || !doctorId ? (
+              <div className="flex items-center gap-2 rounded-lg border bg-muted/40 px-3 py-3 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4" />
+                Selecciona médico y fecha para ver horarios disponibles
+              </div>
+            ) : (
               <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
                 {HORARIOS.map((h) => {
                   const taken = busyHours.includes(h);
                   const past = isToday && h <= nowHM;
                   const disabled = taken || past;
+                  const selected = hora === h;
                   return (
                     <button
                       key={h}
@@ -176,11 +227,11 @@ function Agendar() {
                       disabled={disabled}
                       onClick={() => setHora(h)}
                       className={`rounded-lg border py-2 text-sm font-medium transition ${
-                        hora === h
+                        selected
                           ? "border-primary bg-primary text-primary-foreground"
                           : disabled
-                            ? "cursor-not-allowed border-dashed bg-muted/40 text-muted-foreground/50 line-through"
-                            : "bg-background hover:border-primary hover:bg-primary-soft"
+                            ? "cursor-not-allowed border-dashed bg-muted/40 text-muted-foreground/50"
+                            : "border-success/40 bg-success-soft text-success hover:border-success"
                       }`}
                     >
                       {h}
@@ -188,17 +239,17 @@ function Agendar() {
                   );
                 })}
               </div>
-            </Field>
-          )}
+            )}
+          </div>
 
-          <Field label="Motivo de consulta">
+          <Field label="Motivo de consulta" required>
             <textarea
               required
               rows={3}
               value={motivo}
               onChange={(e) => setMotivo(e.target.value)}
               className="w-full rounded-lg border bg-background px-3 py-2.5 text-sm"
-              placeholder="Describe brevemente el motivo de tu consulta..."
+              placeholder="Describe brevemente el motivo..."
             />
           </Field>
 
@@ -208,22 +259,23 @@ function Agendar() {
             </p>
           )}
 
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => navigate({ to: "/dashboard-paciente" })}
-              className="flex-1 rounded-lg border bg-background py-2.5 font-medium hover:bg-accent"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="flex-1 rounded-lg bg-primary py-2.5 font-semibold text-primary-foreground hover:bg-primary/90"
-            >
-              Confirmar cita
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 font-semibold text-primary-foreground hover:bg-primary/90"
+          >
+            <Calendar className="h-4 w-4" /> Agendar cita
+          </button>
         </form>
+
+        <div className="mt-3 flex justify-center">
+          <button
+            type="button"
+            onClick={() => navigate({ to: "/dashboard-paciente" })}
+            className="text-sm text-muted-foreground hover:text-foreground"
+          >
+            Volver al dashboard
+          </button>
+        </div>
       </main>
     </div>
   );
@@ -231,20 +283,23 @@ function Agendar() {
 
 function Field({
   label,
-  icon: Icon,
   children,
+  required,
 }: {
   label: string;
-  icon?: React.ComponentType<{ className?: string }>;
   children: React.ReactNode;
+  required?: boolean;
 }) {
   return (
     <div>
-      <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium">
-        {Icon && <Icon className="h-4 w-4 text-primary" />}
+      <label className="mb-1.5 block text-sm font-medium">
         {label}
+        {required && <span className="text-destructive"> *</span>}
       </label>
       {children}
     </div>
   );
 }
+
+// Keep Stethoscope import used via JSX detection by referencing in Field icon if needed (no-op)
+void Stethoscope;
