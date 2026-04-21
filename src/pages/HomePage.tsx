@@ -1,8 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   Heart,
-  Calendar,
   FileText,
   Star,
   Users,
@@ -13,11 +12,6 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/Header";
 import heroDoctor from "@/assets/hero-doctor.jpg";
-
-export const Route = createFileRoute("/")({
-  ssr: false,
-  component: Home,
-});
 
 const SLIDES = [
   {
@@ -42,7 +36,7 @@ const SLIDES = [
   },
 ];
 
-function Home() {
+export default function HomePage() {
   const [slide, setSlide] = useState(0);
 
   useEffect(() => {
@@ -56,7 +50,6 @@ function Home() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* HERO con imagen de fondo + carrusel de mensajes */}
       <section className="relative isolate overflow-hidden">
         <img
           src={heroDoctor}
@@ -88,7 +81,6 @@ function Home() {
             </Link>
           </div>
 
-          {/* Indicadores del carrusel */}
           <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2">
             {SLIDES.map((_, i) => (
               <button
@@ -104,7 +96,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Tira de stats sobre fondo navy */}
       <section className="bg-primary text-primary-foreground">
         <div className="container mx-auto grid grid-cols-1 gap-6 px-4 py-10 md:grid-cols-3">
           {[
@@ -125,7 +116,6 @@ function Home() {
         </div>
       </section>
 
-      {/* ¿Qué puedes hacer? */}
       <section className="container mx-auto px-4 py-20">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-bold md:text-4xl">¿Qué puedes hacer?</h2>

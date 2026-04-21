@@ -1,14 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, type FormEvent } from "react";
 import { Heart, UserPlus } from "lucide-react";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/lib/auth";
 import type { Role } from "@/lib/types";
-
-export const Route = createFileRoute("/registro")({
-  ssr: false,
-  component: RegisterPage,
-});
 
 const ESPECIALIDADES = [
   "Medicina General",
@@ -21,7 +16,7 @@ const ESPECIALIDADES = [
   "Traumatología",
 ];
 
-function RegisterPage() {
+export default function RegistroPage() {
   const { user, ready, register } = useAuth();
   const navigate = useNavigate();
   const [nombre, setNombre] = useState("");
@@ -33,7 +28,7 @@ function RegisterPage() {
 
   useEffect(() => {
     if (ready && user) {
-      navigate({ to: user.role === "doctor" ? "/dashboard-doctor" : "/dashboard-paciente" });
+      navigate(user.role === "doctor" ? "/dashboard-doctor" : "/dashboard-paciente");
     }
   }, [ready, user, navigate]);
 
@@ -55,7 +50,7 @@ function RegisterPage() {
       setError("Ya existe una cuenta con ese correo.");
       return;
     }
-    navigate({ to: u.role === "doctor" ? "/dashboard-doctor" : "/dashboard-paciente" });
+    navigate(u.role === "doctor" ? "/dashboard-doctor" : "/dashboard-paciente");
   };
 
   return (

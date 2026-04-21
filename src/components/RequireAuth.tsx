@@ -1,5 +1,5 @@
 import { useEffect, type ReactNode } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import type { Role } from "@/lib/types";
 
@@ -13,11 +13,11 @@ export function RequireAuth({ role, children }: { role?: Role; children: ReactNo
   useEffect(() => {
     if (!ready) return;
     if (!user) {
-      navigate({ to: "/login" });
+      navigate("/login");
       return;
     }
     if (role && user.role !== role) {
-      navigate({ to: user.role === "doctor" ? "/dashboard-doctor" : "/dashboard-paciente" });
+      navigate(user.role === "doctor" ? "/dashboard-doctor" : "/dashboard-paciente");
     }
   }, [ready, user, role, navigate]);
 

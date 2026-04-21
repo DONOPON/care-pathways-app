@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   Calendar,
@@ -18,14 +18,13 @@ import { useAuth } from "@/lib/auth";
 import { storage } from "@/lib/storage";
 import type { Cita, Receta, User } from "@/lib/types";
 
-export const Route = createFileRoute("/dashboard-paciente")({
-  ssr: false,
-  component: () => (
+export default function DashboardPaciente() {
+  return (
     <RequireAuth role="paciente">
       <PacienteDashboard />
     </RequireAuth>
-  ),
-});
+  );
+}
 
 function PacienteDashboard() {
   const { user } = useAuth();
@@ -71,14 +70,12 @@ function PacienteDashboard() {
           </div>
           <Link
             to="/agendar-cita"
-            search={{ doctorId: undefined }}
             className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
           >
             <Plus className="h-4 w-4" /> Nueva cita
           </Link>
         </div>
 
-        {/* Stat cards */}
         <div className="grid gap-4 md:grid-cols-3">
           <StatCard
             icon={Calendar}
@@ -116,8 +113,7 @@ function PacienteDashboard() {
                 </div>
               </div>
               <Link
-                to="/agendar-cita"
-                search={{ doctorId: favDoctor.id }}
+                to={`/agendar-cita?doctorId=${favDoctor.id}`}
                 className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
               >
                 <Calendar className="h-4 w-4" /> Agendar
@@ -126,7 +122,6 @@ function PacienteDashboard() {
           </div>
         )}
 
-        {/* Tabs */}
         <div className="mt-8">
           <div className="grid grid-cols-2 rounded-xl bg-muted p-1">
             <TabBtn active={tab === "citas"} onClick={() => setTab("citas")}>
@@ -173,7 +168,6 @@ function PacienteDashboard() {
           </div>
         </div>
 
-        {/* Médicos disponibles */}
         <div className="mt-12">
           <h2 className="mb-4 text-xl font-bold">Médicos disponibles</h2>
           <div className="grid gap-3 md:grid-cols-2">
@@ -364,8 +358,7 @@ function RecetaCard({
       </div>
 
       <Link
-        to="/recetas/$recetaId"
-        params={{ recetaId: receta.id }}
+        to={`/recetas/${receta.id}`}
         className="mt-4 inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm hover:bg-accent/90"
       >
         <Pill className="h-4 w-4" /> Descargar receta (PDF)

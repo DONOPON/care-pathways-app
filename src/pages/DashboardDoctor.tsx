@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Calendar, ClipboardList, Save, X } from "lucide-react";
 import { Header } from "@/components/Header";
@@ -7,14 +6,13 @@ import { useAuth } from "@/lib/auth";
 import { storage } from "@/lib/storage";
 import type { Cita, Receta, User } from "@/lib/types";
 
-export const Route = createFileRoute("/dashboard-doctor")({
-  ssr: false,
-  component: () => (
+export default function DashboardDoctor() {
+  return (
     <RequireAuth role="doctor">
       <DoctorDashboard />
     </RequireAuth>
-  ),
-});
+  );
+}
 
 function DoctorDashboard() {
   const { user } = useAuth();

@@ -1,6 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { Calendar, Clock, Stethoscope, Search, CheckCircle2 } from "lucide-react";
+import { Calendar, Clock, Search, CheckCircle2 } from "lucide-react";
 import { Header } from "@/components/Header";
 import { RequireAuth } from "@/components/RequireAuth";
 import { useAuth } from "@/lib/auth";
@@ -8,48 +8,28 @@ import { storage } from "@/lib/storage";
 import type { Cita, User } from "@/lib/types";
 
 const HORARIOS = [
-  "08:00",
-  "08:30",
-  "09:00",
-  "09:30",
-  "10:00",
-  "10:30",
-  "11:00",
-  "11:30",
-  "12:00",
-  "12:30",
-  "13:00",
-  "13:30",
-  "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-  "16:30",
-  "17:00",
-  "17:30",
+  "08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+  "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30",
+  "16:00", "16:30", "17:00", "17:30",
 ];
 
-export const Route = createFileRoute("/agendar-cita")({
-  ssr: false,
-  validateSearch: (search: Record<string, unknown>) => ({
-    doctorId: typeof search.doctorId === "string" ? search.doctorId : undefined,
-  }),
-  component: () => (
+export default function AgendarCita() {
+  return (
     <RequireAuth role="paciente">
       <Agendar />
     </RequireAuth>
-  ),
-});
+  );
+}
 
 function Agendar() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const search = Route.useSearch();
+  const [searchParams] = useSearchParams();
+  const initialDoctorId = searchParams.get("doctorId") ?? "";
 
   const [doctors, setDoctors] = useState<User[]>([]);
   const [especialidad, setEspecialidad] = useState("");
-  const [doctorId, setDoctorId] = useState(search.doctorId ?? "");
+  const [doctorId, setDoctorId] = useState(initialDoctorId);
   const [fecha, setFecha] = useState("");
   const [hora, setHora] = useState("");
   const [motivo, setMotivo] = useState("");
@@ -62,11 +42,11 @@ function Agendar() {
   }, []);
 
   useEffect(() => {
-    if (search.doctorId) {
-      const d = storage.getUsers().find((u) => u.id === search.doctorId);
+    if (initialDoctorId) {
+      const d = storage.getUsers().find((u) => u.id === initialDoctorId);
       if (d?.especialidad) setEspecialidad(d.especialidad);
     }
-  }, [search.doctorId]);
+  }, [initialDoctorId]);
 
   const especialidades = useMemo(
     () => Array.from(new Set(doctors.map((d) => d.especialidad).filter(Boolean) as string[])),
@@ -118,7 +98,7 @@ function Agendar() {
     all.push(nueva);
     storage.setCitas(all);
     setSuccess(true);
-    setTimeout(() => navigate({ to: "/dashboard-paciente" }), 1400);
+    setTimeout(() => navigate("/dashboard-paciente"), 1400);
   };
 
   if (success) {
@@ -271,7 +251,7 @@ function Agendar() {
         <div className="mt-3 flex justify-center">
           <button
             type="button"
-            onClick={() => navigate({ to: "/dashboard-paciente" })}
+            onClick={() => navigate("/dashboard-paciente")}
             className="text-sm text-muted-foreground hover:text-foreground"
           >
             Volver al dashboard
@@ -301,6 +281,3 @@ function Field({
     </div>
   );
 }
-
-// Keep Stethoscope import used via JSX detection by referencing in Field icon if needed (no-op)
-void Stethoscope;

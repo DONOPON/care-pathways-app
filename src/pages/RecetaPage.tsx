@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Heart, Download, ArrowLeft, Pill } from "lucide-react";
 import jsPDF from "jspdf";
@@ -8,31 +8,34 @@ import { useAuth } from "@/lib/auth";
 import { storage } from "@/lib/storage";
 import type { Receta, User } from "@/lib/types";
 
-export const Route = createFileRoute("/recetas/$recetaId")({
-  ssr: false,
-  component: () => (
+export default function RecetaPage() {
+  return (
     <RequireAuth>
-      <RecetaPage />
+      <RecetaInner />
     </RequireAuth>
-  ),
-});
+  );
+}
 
-function RecetaPage() {
+function RecetaInner() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { recetaId } = Route.useParams();
+  const { recetaId } = useParams<{ recetaId: string }>();
   const [receta, setReceta] = useState<Receta | null>(null);
   const [doctor, setDoctor] = useState<User | null>(null);
   const [paciente, setPaciente] = useState<User | null>(null);
 
   useEffect(() => {
+    if (!recetaId) {
+      navigate("/dashboard-paciente");
+      return;
+    }
     const r = storage.getRecetas().find((x) => x.id === recetaId);
     if (!r) {
-      navigate({ to: "/dashboard-paciente" });
+      navigate("/dashboard-paciente");
       return;
     }
     if (user && r.pacienteId !== user.id && user.role !== "doctor") {
-      navigate({ to: "/dashboard-paciente" });
+      navigate("/dashboard-paciente");
       return;
     }
     setReceta(r);

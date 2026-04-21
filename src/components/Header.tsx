@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { Heart, LogOut, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 

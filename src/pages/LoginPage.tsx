@@ -1,15 +1,10 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState, type FormEvent } from "react";
 import { Heart, LogIn } from "lucide-react";
 import { Header } from "@/components/Header";
 import { useAuth } from "@/lib/auth";
 
-export const Route = createFileRoute("/login")({
-  ssr: false,
-  component: LoginPage,
-});
-
-function LoginPage() {
+export default function LoginPage() {
   const { user, ready, login } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -18,7 +13,7 @@ function LoginPage() {
 
   useEffect(() => {
     if (ready && user) {
-      navigate({ to: user.role === "doctor" ? "/dashboard-doctor" : "/dashboard-paciente" });
+      navigate(user.role === "doctor" ? "/dashboard-doctor" : "/dashboard-paciente");
     }
   }, [ready, user, navigate]);
 
@@ -30,7 +25,7 @@ function LoginPage() {
       setError("Correo o contraseña incorrectos.");
       return;
     }
-    navigate({ to: u.role === "doctor" ? "/dashboard-doctor" : "/dashboard-paciente" });
+    navigate(u.role === "doctor" ? "/dashboard-doctor" : "/dashboard-paciente");
   };
 
   return (
