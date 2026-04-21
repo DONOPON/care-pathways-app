@@ -1,7 +1,14 @@
-import { Outlet, createRootRoute, Link } from "@tanstack/react-router";
+import {
+  Outlet,
+  Link,
+  createRootRoute,
+  HeadContent,
+  Scripts,
+} from "@tanstack/react-router";
 import { Heart } from "lucide-react";
+import appCss from "../styles.css?url";
 
-function NotFound() {
+function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
@@ -24,6 +31,44 @@ function NotFound() {
 }
 
 export const Route = createRootRoute({
-  component: () => <Outlet />,
-  notFoundComponent: NotFound,
+  head: () => ({
+    meta: [
+      { charSet: "utf-8" },
+      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { title: "SaludDigital — Tu salud, centralizada y accesible" },
+      {
+        name: "description",
+        content:
+          "Portal de salud digital: agenda citas, gestiona tu historial clínico y conecta con médicos de confianza.",
+      },
+      { property: "og:title", content: "SaludDigital" },
+      {
+        property: "og:description",
+        content: "Agenda citas, recetas y médicos favoritos en un solo lugar.",
+      },
+      { property: "og:type", content: "website" },
+    ],
+    links: [{ rel: "stylesheet", href: appCss }],
+  }),
+  shellComponent: RootShell,
+  component: RootComponent,
+  notFoundComponent: NotFoundComponent,
 });
+
+function RootShell({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="es">
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
+function RootComponent() {
+  return <Outlet />;
+}
