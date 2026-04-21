@@ -28,6 +28,13 @@ jobs:
         # vite.config.ts deduce el base a partir de GITHUB_REPOSITORY
         # automáticamente. No hace falta pasar VITE_BASE manualmente.
         run: npm run build
+      - name: Verify build output
+        run: |
+          ls -la dist/
+          echo "--- index.html ---"
+          cat dist/index.html
+          echo "--- assets ---"
+          ls -la dist/assets/ | head -20
       - name: Add SPA 404 fallback
         run: cp dist/index.html dist/404.html
       - name: Disable Jekyll processing
