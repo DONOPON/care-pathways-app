@@ -5,6 +5,7 @@ import { Header } from "@/components/Header";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/login")({
+  ssr: false,
   component: LoginPage,
 });
 
