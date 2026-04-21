@@ -1,7 +1,7 @@
 # SaludDigital
 
 Portal de salud digital construido sobre **TanStack Start** (React 19 + Vite + SSR),
-con persistencia simulada en `localStorage` (sin backend).
+con persistencia simulada en `localStorage` (sin backend)...
 
 ## Scripts
 
