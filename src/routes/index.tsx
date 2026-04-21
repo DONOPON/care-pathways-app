@@ -15,6 +15,7 @@ import { Header } from "@/components/Header";
 import heroDoctor from "@/assets/hero-doctor.jpg";
 
 export const Route = createFileRoute("/")({
+  ssr: false,
   component: Home,
 });
 
